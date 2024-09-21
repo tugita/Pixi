@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Telegram WebApp</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <!-- Canvas для отображения фото профиля -->
+    <div class="profile-photo-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <!-- Слайдер под изображением для выбора размера пикселя -->
+	<div class="slider-container">
+	    <input type="range" id="pixel-size" min="3" max="35" value="10" step="1">
+	    <span id="pixel-size-value" style="display: none;">10</span>
+	</div>
+
+
+    <!-- Нижний контейнер с кнопками -->
+    <div class="footer">
+        <div class="footer-content">
+            <label for="upload-image" class="custom-label">Upload photo</label>
+            <input type="file" id="upload-image" accept="image/*">
+            <button id="send-image" class="custom-button">Get</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+

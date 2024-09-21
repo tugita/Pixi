@@ -1,0 +1,22 @@
+# node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# System files
+.DS_Store
+.idea/
+.vscode/
+
+# SQLite database
+*.sqlite
+
+# Temporary files
+tmp/
+dist/
