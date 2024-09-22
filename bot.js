@@ -32,17 +32,21 @@ const handleRequest = async (chatId, msg) => {
             lastname: msg.from.last_name || null,
         };
 
+        // Добавляем пользователя в буфер
         await addToBuffer(userData);
 
-        await bot.sendMessage(chatId, 'Hello, friend! Head over to the miniapp and create your pixel avatar.', {
-            reply_markup: {
-                inline_keyboard: [
-                    [{
-                        text: 'Start App',
-                        web_app: { url: 'https://tugita.online' }
-                    }]
-                ]
-            }
+        // Используем requestControl для контроля отправки сообщения через bot.sendMessage
+        requestControl(async () => {
+            await bot.sendMessage(chatId, 'Hello, friend! Head over to the miniapp and create your pixel avatar.', {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{
+                            text: 'Start App',
+                            web_app: { url: 'https://tugita.online' }
+                        }]
+                    ]
+                }
+            });
         });
     } catch (error) {
         console.error('Ошибка при обработке запроса:', error);
@@ -84,7 +88,7 @@ async function batchInsertUsers(users) {
 // Botik - обработка команды /start с ограничением запросов
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
-    requestControl(handleRequest, chatId, msg); // Используем контроллер запросов
+    handleRequest(chatId, msg); // Обрабатываем запрос без использования requestControl
 });
 
 // Запуск обработки очереди с интервалом в 1 секунду
