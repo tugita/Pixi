@@ -1,7 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-require('dotenv').config();
 const sequelize = require('./database');
 const User = require('./models/user');
 const app = require('./server');
@@ -64,8 +63,6 @@ async function addToBuffer(userData) {
     }
 }
 
-
-
 // Таймер для регулярной записи данных, даже если буфер не заполнен
 setInterval(async () => {
     if (usersBuffer.length > 0) {
@@ -85,11 +82,6 @@ async function batchInsertUsers(users) {
         }
     }
 }
-
-
-
-
-
 
 // Botik - обработка команды /start с ограничением запросов
 bot.onText(/\/start/, (msg) => {

@@ -10,7 +10,7 @@ const crypto = require('crypto');
 const { requestControl, startProcessingQueue } = require('./rateLimiter'); // Подключаем контроллер запросов
 
 // Инициализация переменных и настроек
-const BOT_TOKEN = process.env.BOT_TOKEN;
+const BOT_TOKEN = process.env.BOT_TOKEN; // Переменные окружения уже загружены
 
 // Функция для валидации initData
 function validateInitData(initData, botToken) {
