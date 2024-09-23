@@ -3,10 +3,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-
-
-const initializeBot = require('./botSingleton'); 
-const bot = initializeBot(); // Получаем единственный экземпляр бота
+const bot = require('./bot'); // Импортируем уже инициализированный бот
 
 const User = require('./models/user');
 const axios = require('axios');
