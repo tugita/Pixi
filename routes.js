@@ -1,8 +1,9 @@
+//routes.js
 const express = require('express');
 const router = express.Router();
+const bot = require('./bot'); // Уже инициализированный бот
 const fs = require('fs');
 const path = require('path');
-const bot = require('./bot'); // Импортируем уже инициализированный бот
 const User = require('./models/user');
 const axios = require('axios');
 const sharp = require('sharp');
@@ -211,8 +212,6 @@ router.get('/sendProfilePhoto', async (req, res) => {
     }
 });
 
-// Запуск обработки очереди с интервалом в 1 секунду
-startProcessingQueue();
 
 module.exports = router;
 
