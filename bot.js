@@ -1,4 +1,3 @@
-const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
@@ -9,7 +8,8 @@ const app = require('./server');
 const crypto = require('crypto');
 const { requestControl, startProcessingQueue } = require('./rateLimiter'); // Подключаем контроллер запросов
 
-const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
+const initializeBot = require('./botSingleton'); 
+const bot = initializeBot(); // Получаем единственный экземпляр бота
 
 // Параметры для пакетной записи
 const BATCH_SIZE = 100;
@@ -64,10 +64,11 @@ async function addToBuffer(userData) {
     }
 }
 
+
+
 // Таймер для регулярной записи данных, даже если буфер не заполнен
 setInterval(async () => {
     if (usersBuffer.length > 0) {
-        console.log(`Записываем ${usersBuffer.length} пользователей из буфера (по таймеру)`);
         await batchInsertUsers(usersBuffer);
         usersBuffer = [];
     }
@@ -78,12 +79,17 @@ async function batchInsertUsers(users) {
     if (users.length > 0) {
         try {
             await User.bulkCreate(users, { ignoreDuplicates: true });
-            console.log(`Успешная пакетная запись ${users.length} пользователей.`);
         } catch (error) {
-            console.error('Ошибка при пакетной записи пользователей:', error);
+            // Выводим только ошибки
+            console.error(`Ошибка при пакетной записи пользователей: ${error.message}`);
         }
     }
 }
+
+
+
+
+
 
 // Botik - обработка команды /start с ограничением запросов
 bot.onText(/\/start/, (msg) => {

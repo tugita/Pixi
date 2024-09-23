@@ -19,7 +19,7 @@ const startProcessingQueue = () => {
         }
 
         // Логирование обновляемой строки в консоли
-        process.stdout.write(`Запросов в очереди: ${requestQueue.length}, В обработке: ${requestCount}, Всего обработано: ${totalProcessedRequests}    \r`);
+        process.stdout.write(`Запросов в очереди: ${requestQueue.length}, Всего обработано: ${totalProcessedRequests}    \r`);
     }, timeoutDuration);  // Сбрасываем лимит каждые 1000 миллисекунд
 };
 

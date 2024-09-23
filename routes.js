@@ -3,7 +3,11 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const bot = require('./bot');
+
+
+const initializeBot = require('./botSingleton'); 
+const bot = initializeBot(); // Получаем единственный экземпляр бота
+
 const User = require('./models/user');
 const axios = require('axios');
 const sharp = require('sharp');
@@ -128,14 +132,13 @@ const handleRequest = async (req, res) => {
         // Отправляем изображение через бот
         await bot.sendPhoto(userId, filePathLocal, { caption: "Here's your processed image! Set up a profile picture! And get back in the game: @notpixel" });
 
-        // Удаляем изображение после отправки
-        fs.unlink(filePathLocal, (err) => {
-            if (err) {
-                console.error('Ошибка при удалении изображения:', err);
-            } else {
-                console.log('Изображение успешно удалено.');
-            }
-        });
+	// Удаляем изображение после отправки
+	fs.unlink(filePathLocal, (err) => {
+	    if (err) {
+		console.error('Ошибка при удалении изображения:', err);
+	    }
+	});
+
 
         // Обновляем время последней отправки изображения
         user.lastImageSent = now;
