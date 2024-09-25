@@ -9,6 +9,7 @@ const bot = require('./bot');
 const app = express();
 const port = process.env.PORT || 3000;
 
+
 // Увеличиваем лимит для JSON данных до 10 MB
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.json({ limit: '10mb' })); // Увеличиваем лимит для JSON до 10 MB

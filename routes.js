@@ -1,17 +1,21 @@
 //routes.js
 const express = require('express');
 const router = express.Router();
-const bot = require('./bot'); // Уже инициализированный бот
+const bot = require('./bot'); 
 const fs = require('fs');
 const path = require('path');
 const User = require('./models/user');
 const axios = require('axios');
 const sharp = require('sharp');
 const crypto = require('crypto');
+const multer = require('multer');
+const { uploadFile } = require('./doSpaceService');
 const { requestControl, startProcessingQueue } = require('./rateLimiter'); // Подключаем контроллер запросов
 
+
+
 // Инициализация переменных и настроек
-const BOT_TOKEN = process.env.BOT_TOKEN; // Переменные окружения уже загружены
+const BOT_TOKEN = process.env.BOT_TOKEN; 
 
 // Функция для валидации initData
 function validateInitData(initData, botToken) {
@@ -209,6 +213,54 @@ router.get('/sendProfilePhoto', async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ success: false, message: 'Ошибка сервера' });
+    }
+});
+
+// Настройка multer для обработки файлов
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+router.post('/uploadImage', upload.single('image'), async (req, res) => {
+    const authHeader = req.headers.authorization;
+
+    console.log('Запрос на загрузку изображения получен.');
+
+    // Валидация авторизации
+    if (!authHeader || !authHeader.startsWith('initData ')) {
+        console.error('Ошибка: Отсутствует авторизация.');
+        return res.status(401).json({ success: false, message: 'Отсутствует авторизация.' });
+    }
+
+    console.log('Авторизация прошла успешно.');
+
+    // Извлекаем initData и userId
+    const initData = authHeader.split(' ')[1];
+    const parsedInitData = JSON.parse(decodeURIComponent(initData.split('&').find(param => param.startsWith('user=')).split('=')[1]));
+
+    const userId = parsedInitData.id;
+    console.log(`Извлечен userId: ${userId}`);
+
+    const file = req.file;
+
+    // Проверка наличия файла
+    if (!file) {
+        console.error('Ошибка: Файл не был загружен.');
+        return res.status(400).json({ success: false, message: 'Файл не загружен.' });
+    }
+
+    console.log('Файл успешно загружен на сервер.');
+
+    try {
+        // Используем doSpaceService для загрузки файла в DigitalOcean Spaces
+        console.log('Начинается загрузка файла в DigitalOcean Spaces...');
+        const fileUrl = await uploadFile(`user_${userId}`, file);
+        console.log(`Файл успешно загружен в DigitalOcean Spaces. URL: ${fileUrl}`);
+
+        // Возвращаем URL загруженного файла
+        res.status(200).json({ success: true, fileUrl: fileUrl });
+    } catch (error) {
+        console.error('Ошибка при загрузке файла в DigitalOcean Spaces:', error);
+        res.status(500).json({ success: false, message: 'Ошибка при загрузке файла.' });
     }
 });
 

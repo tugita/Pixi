@@ -279,7 +279,58 @@ async function sendImageToServer() {
     }
 }
 
-document.getElementById('send-image').addEventListener('click', () => {
-    sendImageToServer();
-});
+document.getElementById('send-image').addEventListener('click', sendImageToServer);
+
+async function uploadImageToServer() {
+    const canvas = document.getElementById('canvas');
+
+    // Преобразуем содержимое canvas в Blob (файл)
+    canvas.toBlob(async (blob) => {
+        if (!blob) {
+            alert('Ошибка при создании изображения.');
+            return;
+        }
+
+        // Создаем FormData для отправки файла на сервер
+        const formData = new FormData();
+        formData.append('image', blob, 'canvas-image.png'); // Изменено 'file' на 'image'
+        formData.append('prefix', 'images'); // Дополнительные данные (категория/папка)
+
+        try {
+            // Отправляем изображение на сервер
+            const response = await fetch('/uploadImage', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `initData ${initData}`, // initData передается через заголовок
+                },
+                body: formData // Отправляем файл с помощью FormData
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                console.log('Изображение успешно загружено на сервер:', data.fileUrl);
+                Telegram.WebApp.openLink(data.fileUrl); // Открываем ссылку на изображение через Telegram.WebApp
+            } else {
+                console.error('Ошибка при загрузке изображения:', data.message || 'Неизвестная ошибка');
+                alert('Ошибка: ' + (data.message || 'Неизвестная ошибка'));
+            }
+        } catch (error) {
+            console.error('Ошибка при отправке изображения:', error);
+            alert('Ошибка при отправке изображения.');
+        }
+    }, 'image/png');
+}
+
+// Привязываем функцию к кнопке скачивания
+document.getElementById('download-btn').addEventListener('click', uploadImageToServer);
+
+
+
+
+
+
+
+
+
 
