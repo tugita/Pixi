@@ -14,7 +14,7 @@ function initializeBot() {
         // Устанавливаем URL вебхука
         bot.setWebHook(webhookUrl)
             .then(() => {
-                console.log(`Webhook успешно установлен на ${webhookUrl}`);
+                console.log(`Webhook успешно установлен`);
             })
             .catch((error) => {
                 console.error('Ошибка при установке вебхука:', error);

@@ -106,20 +106,22 @@ async function handleProfilePhoto() {
     } else {
         visitCount = parseInt(visitCount, 10);
 
-        if (visitCount >= 20) {
-            console.log('20-й заход, обновляем фото...');
+        if (visitCount % 3 === 0) { // Обновляем фото каждые 3 визита
+            console.log(`Каждый третий визит (${visitCount}), обновляем фото...`);
             const isProfilePhotoSaved = await saveProfilePhoto();
             if (isProfilePhotoSaved) {
                 await loadImage();
             }
-            localStorage.setItem('visitCount', 1);
         } else {
-            console.log(`Заход номер: ${visitCount + 1}`);
+            console.log(`Визит номер: ${visitCount + 1}, используем сохранённое фото.`);
             loadPhotoFromLocal();
-            localStorage.setItem('visitCount', visitCount + 1);
         }
+
+        // Увеличиваем счётчик визитов
+        localStorage.setItem('visitCount', visitCount + 1);
     }
 }
+
 
 (async function() {
     await handleProfilePhoto();
@@ -236,50 +238,7 @@ document.getElementById('upload-image').addEventListener('change', (event) => {
 const initData = Telegram.WebApp.initData;
 const initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
 
-async function sendImageToServer() {
-    const button = document.getElementById('send-image');
-    
-    button.disabled = true;
-    button.textContent = 'Sending...';
 
-    try {
-        const image = canvas.toDataURL('image/jpeg');
-
-        const response = await fetch('/sendProcessedImage', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `initData ${initData}`
-            },
-            body: JSON.stringify({
-                image: image
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.message === "Изображение отправлено!") {
-            setTimeout(() => {
-                window.location.href = `https://t.me/Pixinotbot`;
-                Telegram.WebApp.close();
-            }, 1000);
-        } else if (data.message && data.remainingTime) {
-            button.textContent = `Wait ${data.remainingTime} minutes ❤️`;
-            button.disabled = true;
-            
-            setTimeout(() => {
-                button.textContent = 'Get';
-                button.disabled = false;
-            }, data.remainingTime * 60 * 1000);
-        }
-    } catch (error) {
-        console.error('Ошибка при отправке изображения:', error);
-        button.textContent = 'Error, try again';
-        button.disabled = false;
-    }
-}
-
-document.getElementById('send-image').addEventListener('click', sendImageToServer);
 
 async function uploadImageToServer() {
     const canvas = document.getElementById('canvas');
@@ -292,15 +251,9 @@ async function uploadImageToServer() {
             return;
         }
 
-        // Устанавливаем дату истечения срока
-        const expire = new Date();
-        expire.setDate(expire.getDate() + 1); 
-
         // Создаем FormData для отправки файла на сервер
         const formData = new FormData();
-        formData.append('file', blob, `${val.text}.jpg`); 
-        formData.append('mimetype', 'image/jpeg');
-        formData.append('expire', expire.toISOString());
+        formData.append('image', blob, `${val.text}.jpg`); 
 
         try {
             // Отправляем изображение на сервер
@@ -328,7 +281,9 @@ async function uploadImageToServer() {
     }, 'image/jpeg'); 
 }
 
-document.getElementById('download-btn').addEventListener('click', uploadImageToServer);
+document.getElementById('send-image').addEventListener('click', uploadImageToServer);
+
+//document.getElementById('send-image').addEventListener('click', sendImageToServer);
 
 
 

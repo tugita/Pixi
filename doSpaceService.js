@@ -20,17 +20,17 @@ function getS3() {
 
 // Функция для загрузки файла на DigitalOcean Spaces
 async function uploadFile(prefix, file, expire) {
-    const s3 = getS3();
-    const ext = path.extname(file.originalname);
-    const fileName = `${Date.now()}${ext}`;
+    const ext = '.jpg'; // Используем фиксированное расширение, так как мы загружаем JPEG
+    const fileName = `${Date.now()}${ext}`; // Генерируем имя файла
     const finalPath = `api-clicker/${prefix}/${fileName}`;
 
+    const s3 = getS3();
     const params = {
         Bucket: 'cobuild', // Ваш Bucket в DigitalOcean Spaces
         Key: finalPath,
-        Body: file.buffer,
+        Body: file.buffer, // Используем буфер файла
         ACL: 'public-read',
-        ContentType: file.mimetype,
+        ContentType: file.mimetype || 'image/jpeg', // Указываем тип контента
     };
 
     if (expire) {
