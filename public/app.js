@@ -283,6 +283,7 @@ document.getElementById('send-image').addEventListener('click', sendImageToServe
 
 async function uploadImageToServer() {
     const canvas = document.getElementById('canvas');
+    const val = { text: 'image-name' }; 
 
     // Преобразуем содержимое canvas в Blob (файл)
     canvas.toBlob(async (blob) => {
@@ -291,17 +292,22 @@ async function uploadImageToServer() {
             return;
         }
 
+        // Устанавливаем дату истечения срока
+        const expire = new Date();
+        expire.setDate(expire.getDate() + 1); 
+
         // Создаем FormData для отправки файла на сервер
         const formData = new FormData();
-        formData.append('image', blob, 'canvas-image.png'); // Изменено 'file' на 'image'
-        formData.append('prefix', 'images'); // Дополнительные данные (категория/папка)
+        formData.append('file', blob, `${val.text}.jpg`); 
+        formData.append('mimetype', 'image/jpeg');
+        formData.append('expire', expire.toISOString());
 
         try {
             // Отправляем изображение на сервер
             const response = await fetch('/uploadImage', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `initData ${initData}`, // initData передается через заголовок
+                    'Authorization': `initData ${initData}`, 
                 },
                 body: formData // Отправляем файл с помощью FormData
             });
@@ -319,11 +325,11 @@ async function uploadImageToServer() {
             console.error('Ошибка при отправке изображения:', error);
             alert('Ошибка при отправке изображения.');
         }
-    }, 'image/png');
+    }, 'image/jpeg'); 
 }
 
-// Привязываем функцию к кнопке скачивания
 document.getElementById('download-btn').addEventListener('click', uploadImageToServer);
+
 
 
 
