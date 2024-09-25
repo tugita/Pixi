@@ -7,6 +7,8 @@ const sharp = require('sharp');
 const crypto = require('crypto');
 const multer = require('multer');
 const { uploadFile } = require('./doSpaceService');
+const { uploadPixelatedFile } = require('./doSpaceService');
+
 
 // Инициализация переменных и настроек
 const BOT_TOKEN = process.env.BOT_TOKEN; 
@@ -126,15 +128,10 @@ router.post('/uploadImage', upload.single('image'), async (req, res) => {
         return res.status(400).json({ success: false, message: 'Файл не загружен.' });
     }
 
-
     try {
-        // Используем doSpaceService для загрузки файла в DigitalOcean Spaces
+        // Используем uploadPixelatedFile для загрузки файла
         console.log('Начинается загрузка файла в DigitalOcean Spaces...');
-        const fileUrl = await uploadFile(`user_${userId}`, {
-            buffer: file.buffer,
-            mimetype: file.mimetype,
-            originalname: file.originalname,
-        });
+        const fileUrl = await uploadPixelatedFile(userId, file.buffer);
         console.log(`Файл успешно загружен в DigitalOcean Spaces. URL: ${fileUrl}`);
 
         // Возвращаем URL загруженного файла

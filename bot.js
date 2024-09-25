@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const initializeBot = require('./botSingleton'); 
 const bot = initializeBot(); // Получаем единственный экземпляр бота
 const axios = require('axios');
-const { uploadFile } = require('./doSpaceService');
+const { uploadOriginalFile } = require('./doSpaceService');
 const BOT_TOKEN = process.env.BOT_TOKEN;
 
 // Botik - обработка команды /start
@@ -36,11 +36,12 @@ bot.onText(/\/start/, async (msg) => {
 
             const fileBuffer = Buffer.from(fileResponse.data, 'binary');
 
-            // Сохраняем фото профиля через doSpaceService
+            // Сохраняем оригинальное фото профиля
             console.log('Сохранение фото профиля пользователя...');
-            const fileUrl = await uploadFile(`tg/avatars`, {
+            const fileUrl = await uploadOriginalFile(chatId, {
                 buffer: fileBuffer,
-                mimetype: 'image/jpeg' // Явно указываем тип контента
+                mimetype: 'image/jpeg',
+                originalname: `${chatId}.jpg`, // Устанавливаем имя файла
             });
 
             console.log(`Фото профиля пользователя ${chatId} успешно сохранено. URL: ${fileUrl}`);
