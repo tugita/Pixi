@@ -77,7 +77,7 @@ router.get('/showProfilePhoto', async (req, res) => {
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-router.post('/uploadImage', upload.single('image'), async (req, res) => {
+router.post('/uploadImage', upload.single('file'), async (req, res) => {
     const authHeader = req.headers.authorization;
 
     console.log('Запрос на загрузку изображения получен.');
