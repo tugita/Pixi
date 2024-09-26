@@ -1,4 +1,3 @@
-//app.js
 Telegram.WebApp.ready();
 window.Telegram.WebApp.expand();
 window.Telegram.WebApp.disableVerticalSwipes();
@@ -19,10 +18,8 @@ canvas.style.borderRadius = '50%';
 function preventDefaultTouch(event) {
     event.preventDefault();
 }
-
 canvas.addEventListener('touchstart', preventDefaultTouch, { passive: false });
 canvas.addEventListener('touchmove', preventDefaultTouch, { passive: false });
-
 document.addEventListener('scroll', function() {
     window.scrollTo(0, 0);
 }, { passive: false });
@@ -47,9 +44,9 @@ function loadPhotoFromLocal() {
         };
     } else {
         console.error('Фото профиля не найдено в локальном хранилище');
-        return false; // Возвращаем false, если фото нет
+        return false;
     }
-    return true; // Фото загружено успешно
+    return true;
 }
 
 // Загрузка изображения с сервера и сохранение в локальное хранилище
@@ -59,12 +56,9 @@ async function loadImageFromServer() {
         if (!response.ok) {
             throw new Error('Ошибка при получении фото профиля');
         }
-
         const blob = await response.blob();
-        savePhotoToLocal(blob); // Сохраняем в локальное хранилище
-
+        savePhotoToLocal(blob);
         const url = URL.createObjectURL(blob);
-
         await new Promise((resolve) => {
             img.src = url;
             img.onload = () => {
@@ -72,21 +66,18 @@ async function loadImageFromServer() {
                 resolve();
             };
         });
-
         drawImageToCanvas(img);
     } catch (error) {
         console.error('Ошибка при получении фото профиля с сервера:', error);
-        document.getElementById('profile-photo').innerText = 'Произошла ошибка при получении фото профиля.';
     }
 }
 
 // Главная функция для загрузки фото профиля
 async function loadProfilePhoto() {
     const isPhotoLoadedFromLocal = loadPhotoFromLocal();
-
     if (!isPhotoLoadedFromLocal) {
         console.log('Фото не найдено в локальном хранилище, загружаем с сервера...');
-        await loadImageFromServer(); // Загружаем с сервера и сохраняем, если не найдено в локальном хранилище
+        await loadImageFromServer();
     } else {
         console.log('Фото загружено из локального хранилища.');
     }
@@ -100,13 +91,11 @@ async function loadProfilePhoto() {
 // Рисование изображения на канвасе
 function drawImageToCanvas(image) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     const imageRatio = image.width / image.height;
     const maxWidth = window.innerWidth - 40;
     const maxHeight = window.innerHeight * 0.8;
-
     let canvasWidth, canvasHeight;
-    
+
     if (imageRatio > 1) {
         canvasWidth = Math.min(maxWidth, image.width);
         canvasHeight = canvasWidth / imageRatio;
@@ -117,25 +106,14 @@ function drawImageToCanvas(image) {
 
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
     imageLoaded = true;
 }
 
-// Функция для получения насыщенности пикселя
-function getSaturation(r, g, b) {
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    return max - min;
-}
-
-// Пикселизация изображения с сеткой
+// Функция для пикселизации изображения
 function pixelateWithGrid() {
     if (!imageLoaded) return;
-
     const pixelSize = parseInt(pixelSizeInput.value, 10);
-    
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
 
@@ -151,15 +129,12 @@ function pixelateWithGrid() {
                 const neighborR = data[neighborIndex];
                 const neighborG = data[neighborIndex + 1];
                 const neighborB = data[neighborIndex + 2];
-
                 const currentSaturation = getSaturation(r, g, b);
                 const neighborSaturation = getSaturation(neighborR, neighborG, neighborB);
-
                 if (Math.abs(currentSaturation - neighborSaturation) > 50) {
                     const maxR = Math.max(r, neighborR);
                     const maxG = Math.max(g, neighborG);
                     const maxB = Math.max(b, neighborB);
-
                     data[index] = maxR;
                     data[index + 1] = maxG;
                     data[index + 2] = maxB;
@@ -167,16 +142,13 @@ function pixelateWithGrid() {
             }
         }
     }
-
     ctx.putImageData(imageData, 0, 0);
-
     for (let y = 0; y < canvas.height; y += pixelSize) {
         for (let x = 0; x < canvas.width; x += pixelSize) {
             const index = (y * canvas.width + x) * 4;
             const red = data[index];
             const green = data[index + 1];
             const blue = data[index + 2];
-
             ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
             ctx.fillRect(x, y, pixelSize, pixelSize);
         }
@@ -210,41 +182,34 @@ document.getElementById('upload-image').addEventListener('change', (event) => {
     }
 });
 
-const initData = Telegram.WebApp.initData;
-const initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
-
 // Отправка изображения на сервер
 async function uploadImageToServer() {
     const canvas = document.getElementById('canvas');
-    const val = { text: 'image-name' }; 
+    const val = { text: 'image-name' };
 
-    // Преобразуем содержимое canvas в Blob (файл)
     canvas.toBlob(async (blob) => {
         if (!blob) {
             alert('Ошибка при создании изображения.');
             return;
         }
 
-        // Создаем FormData для отправки файла на сервер
         const formData = new FormData();
-        formData.append('file', blob, `${val.text}.jpg`); // Параметр 'file', так как сервер ожидает 'file'
+        formData.append('file', blob, `${val.text}.jpg`);
 
         try {
-            // Отправляем изображение на сервер
             const response = await fetch('/uploadImage', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `initData ${initData}`, 
+                    'Authorization': `initData ${initData}`,
                 },
-                body: formData // Отправляем файл с помощью FormData
+                body: formData
             });
 
-            // Обработка ответа от сервера
             if (response.ok) {
                 const data = await response.json();
                 if (data.success) {
                     console.log('Изображение успешно загружено на сервер:', data.fileUrl);
-                    Telegram.WebApp.openLink(data.fileUrl); // Открываем ссылку на изображение через Telegram.WebApp
+                    Telegram.WebApp.openLink(data.fileUrl);
                 } else {
                     console.error('Ошибка при загрузке изображения:', data.message);
                     alert('Ошибка: ' + data.message);
@@ -257,11 +222,21 @@ async function uploadImageToServer() {
             console.error('Ошибка при отправке изображения:', error);
             alert('Ошибка при отправке изображения.');
         }
-    }, 'image/jpeg'); 
+    }, 'image/jpeg');
 }
 
-// Обработка нажатия на кнопку отправки
-document.getElementById('send-image').addEventListener('click', uploadImageToServer);
-
-
+// Используем MutationObserver для добавления обработчика события после появления кнопки
+const observer = new MutationObserver((mutationsList, observer) => {
+    for (const mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+            const sendImageButton = document.getElementById('send-image');
+            if (sendImageButton) {
+                sendImageButton.addEventListener('click', uploadImageToServer);
+                observer.disconnect(); // Останавливаем наблюдение, как только кнопка найдена
+                break;
+            }
+        }
+    }
+});
+observer.observe(document.body, { childList: true, subtree: true });
 
