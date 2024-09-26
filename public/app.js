@@ -1,3 +1,4 @@
+//app.js
 Telegram.WebApp.ready();
 window.Telegram.WebApp.expand();
 window.Telegram.WebApp.disableVerticalSwipes();
@@ -14,6 +15,7 @@ let img = new Image();
 
 canvas.style.borderRadius = '50%';
 
+// Предотвращаем перетаскивание и скроллинг
 function preventDefaultTouch(event) {
     event.preventDefault();
 }
@@ -25,14 +27,16 @@ document.addEventListener('scroll', function() {
     window.scrollTo(0, 0);
 }, { passive: false });
 
+// Сохраняем фото в локальное хранилище
 function savePhotoToLocal(photoBlob) {
     const reader = new FileReader();
     reader.onloadend = function() {
-        localStorage.setItem('profilePhoto', reader.result);
+        localStorage.setItem('profilePhoto', reader.result); // Сохраняем фото в base64
     };
     reader.readAsDataURL(photoBlob);
 }
 
+// Загружаем фото из локального хранилища
 function loadPhotoFromLocal() {
     const photoBase64 = localStorage.getItem('profilePhoto');
     if (photoBase64) {
@@ -40,32 +44,16 @@ function loadPhotoFromLocal() {
         img.onload = () => {
             canvas.style.borderRadius = '50%';
             drawImageToCanvas(img);
-            pixelateWithGrid();
         };
     } else {
         console.error('Фото профиля не найдено в локальном хранилище');
+        return false; // Возвращаем false, если фото нет
     }
+    return true; // Фото загружено успешно
 }
 
-async function saveProfilePhoto() {
-    try {
-        const response = await fetch(`/sendProfilePhoto?userId=${userId}`);
-        const data = await response.json();
-
-        if (data.success) {
-            console.log('Фото профиля успешно сохранено на сервере:', data.filePath);
-            return true;
-        } else {
-            console.error('Ошибка при сохранении фото профиля:', data.message);
-            return false;
-        }
-    } catch (error) {
-        console.error('Ошибка при запросе сохранения фото профиля:', error);
-        return false;
-    }
-}
-
-async function loadImage() {
+// Загрузка изображения с сервера и сохранение в локальное хранилище
+async function loadImageFromServer() {
     try {
         const response = await fetch(`/showProfilePhoto?userId=${userId}`);
         if (!response.ok) {
@@ -73,7 +61,7 @@ async function loadImage() {
         }
 
         const blob = await response.blob();
-        savePhotoToLocal(blob);
+        savePhotoToLocal(blob); // Сохраняем в локальное хранилище
 
         const url = URL.createObjectURL(blob);
 
@@ -86,47 +74,30 @@ async function loadImage() {
         });
 
         drawImageToCanvas(img);
-        pixelateWithGrid();
     } catch (error) {
-        console.error('Ошибка при получении фото профиля:', error);
+        console.error('Ошибка при получении фото профиля с сервера:', error);
         document.getElementById('profile-photo').innerText = 'Произошла ошибка при получении фото профиля.';
     }
 }
 
-async function handleProfilePhoto() {
-    let visitCount = localStorage.getItem('visitCount');
+// Главная функция для загрузки фото профиля
+async function loadProfilePhoto() {
+    const isPhotoLoadedFromLocal = loadPhotoFromLocal();
 
-    if (!visitCount) {
-        console.log('Первый заход, загружаем фото с сервера...');
-        const isProfilePhotoSaved = await saveProfilePhoto();
-        if (isProfilePhotoSaved) {
-            await loadImage();
-        }
-        localStorage.setItem('visitCount', 1);
+    if (!isPhotoLoadedFromLocal) {
+        console.log('Фото не найдено в локальном хранилище, загружаем с сервера...');
+        await loadImageFromServer(); // Загружаем с сервера и сохраняем, если не найдено в локальном хранилище
     } else {
-        visitCount = parseInt(visitCount, 10);
-
-        if (visitCount % 3 === 0) { // Обновляем фото каждые 3 визита
-            console.log(`Каждый третий визит (${visitCount}), обновляем фото...`);
-            const isProfilePhotoSaved = await saveProfilePhoto();
-            if (isProfilePhotoSaved) {
-                await loadImage();
-            }
-        } else {
-            console.log(`Визит номер: ${visitCount + 1}, используем сохранённое фото.`);
-            loadPhotoFromLocal();
-        }
-
-        // Увеличиваем счётчик визитов
-        localStorage.setItem('visitCount', visitCount + 1);
+        console.log('Фото загружено из локального хранилища.');
     }
 }
 
-
+// Инициализация загрузки фото
 (async function() {
-    await handleProfilePhoto();
+    await loadProfilePhoto();
 })();
 
+// Рисование изображения на канвасе
 function drawImageToCanvas(image) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -152,12 +123,14 @@ function drawImageToCanvas(image) {
     imageLoaded = true;
 }
 
+// Функция для получения насыщенности пикселя
 function getSaturation(r, g, b) {
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     return max - min;
 }
 
+// Пикселизация изображения с сеткой
 function pixelateWithGrid() {
     if (!imageLoaded) return;
 
@@ -210,6 +183,7 @@ function pixelateWithGrid() {
     }
 }
 
+// Обработчик изменения размера пикселя
 pixelSizeInput.addEventListener('input', () => {
     pixelSizeValue.textContent = pixelSizeInput.value;
     if (imageLoaded) {
@@ -219,6 +193,7 @@ pixelSizeInput.addEventListener('input', () => {
     }
 });
 
+// Обработка загрузки изображения вручную
 document.getElementById('upload-image').addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -238,8 +213,7 @@ document.getElementById('upload-image').addEventListener('change', (event) => {
 const initData = Telegram.WebApp.initData;
 const initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
 
-
-
+// Отправка изображения на сервер
 async function uploadImageToServer() {
     const canvas = document.getElementById('canvas');
     const val = { text: 'image-name' }; 
@@ -281,17 +255,7 @@ async function uploadImageToServer() {
     }, 'image/jpeg'); 
 }
 
+// Обработка нажатия на кнопку отправки
 document.getElementById('send-image').addEventListener('click', uploadImageToServer);
-
-//document.getElementById('send-image').addEventListener('click', sendImageToServer);
-
-
-
-
-
-
-
-
-
 
 

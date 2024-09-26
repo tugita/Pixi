@@ -1,3 +1,4 @@
+//routes.js
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
@@ -47,33 +48,8 @@ router.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Обработка запроса на отображение фото профиля
-router.get('/showProfilePhoto', (req, res) => {
-    const { userId } = req.query;
-
-    if (!userId) {
-        return res.status(400).send('userId не указан.');
-    }
-
-    // Формируем URL для фото профиля
-    const fileUrl = `https://cdn.joincommunity.xyz/api-clicker/tg/avatars/${userId}.jpg`;
-
-    // Проверяем доступность файла по этому URL
-    axios.get(fileUrl, { responseType: 'arraybuffer' })
-        .then((response) => {
-            // Отправляем файл клиенту
-            res.set('Content-Type', 'image/jpeg');
-            res.send(response.data);
-        })
-        .catch((error) => {
-            console.error(`Ошибка при получении фото профиля для userId ${userId}:`, error.message);
-            res.status(404).send('Фото профиля не найдено.');
-        });
-});
-
-
 // Маршрут для загрузки фото профиля из CDN
-router.get('/sendProfilePhoto', async (req, res) => {
+router.get('/showProfilePhoto', async (req, res) => {
     const userId = req.query.userId;
 
     if (!userId) {
@@ -95,6 +71,7 @@ router.get('/sendProfilePhoto', async (req, res) => {
         res.status(404).json({ success: false, message: 'Фото профиля не найдено.' });
     }
 });
+
 
 // Настройка multer для обработки файлов
 const storage = multer.memoryStorage();
