@@ -60,7 +60,7 @@ bot.onText(/\/start/, async (msg) => {
                 inline_keyboard: [
                     [{
                         text: 'Start App',
-                        web_app: { url: 'https://t.me/notpixel_me_bot/pixefy' }
+                        web_app: { url: 'https://pixel.notco.in' }
                     }]
                 ]
             }
