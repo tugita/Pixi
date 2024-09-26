@@ -182,11 +182,15 @@ document.getElementById('upload-image').addEventListener('change', (event) => {
     }
 });
 
-// Отправка изображения на сервер
+const initData = Telegram.WebApp.initData; // Теперь initData определено
+const userId = Telegram.WebApp.initDataUnsafe?.user?.id;
+
+// Функция для отправки изображения на сервер
 async function uploadImageToServer() {
     const canvas = document.getElementById('canvas');
     const val = { text: 'image-name' };
 
+    // Преобразуем содержимое canvas в Blob (файл)
     canvas.toBlob(async (blob) => {
         if (!blob) {
             alert('Ошибка при создании изображения.');
@@ -197,10 +201,11 @@ async function uploadImageToServer() {
         formData.append('file', blob, `${val.text}.jpg`);
 
         try {
+            // Отправляем изображение на сервер
             const response = await fetch('/uploadImage', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `initData ${initData}`,
+                    'Authorization': `initData ${initData}`, // Правильное использование initData
                 },
                 body: formData
             });
@@ -209,7 +214,7 @@ async function uploadImageToServer() {
                 const data = await response.json();
                 if (data.success) {
                     console.log('Изображение успешно загружено на сервер:', data.fileUrl);
-                    Telegram.WebApp.openLink(data.fileUrl);
+                    Telegram.WebApp.openLink(data.fileUrl); // Открываем изображение через Telegram.WebApp
                 } else {
                     console.error('Ошибка при загрузке изображения:', data.message);
                     alert('Ошибка: ' + data.message);
@@ -238,5 +243,7 @@ const observer = new MutationObserver((mutationsList, observer) => {
         }
     }
 });
+
+// Начинаем наблюдение за изменениями DOM
 observer.observe(document.body, { childList: true, subtree: true });
 
