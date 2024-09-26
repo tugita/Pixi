@@ -230,6 +230,8 @@ async function uploadImageToServer() {
     }, 'image/jpeg');
 }
 
+debugger;
+
 // Используем MutationObserver для добавления обработчика события после появления кнопки
 const observer = new MutationObserver((mutationsList, observer) => {
     for (const mutation of mutationsList) {
