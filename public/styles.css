@@ -95,8 +95,10 @@ body {
     max-width: 300px;
 }
 
-/* Стиль кнопок Upload и Get */
-.custom-label, .custom-button {
+/* Общие стили для кнопок Upload и Get */
+.custom-label, 
+.custom-button {
+    display: block;
     width: 100%;
     height: 50px;
     background-color: #314156;
@@ -108,17 +110,21 @@ body {
     cursor: pointer;
     text-align: center;
     line-height: 50px;
+    transition: background-color 0.3s ease;
 }
 
+/* Скрытие input для загрузки изображений */
 #upload-image {
     display: none;
 }
 
+/* Специфический стиль для кнопки "Get" */
 .custom-button {
     background-color: #248bda;
     color: #ffffff;
 }
 
+/* Hover-эффекты для кнопок */
 .custom-label:hover {
     background-color: #293648;
 }
@@ -126,4 +132,5 @@ body {
 .custom-button:hover {
     background-color: #207cc2;
 }
+
 
