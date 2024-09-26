@@ -1,129 +1,127 @@
 /* Основные стили для всего документа */
 body {
-    height: 100vh;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    color: #ffffff;
-    background: #171f2a;
-    font-family: 'ProductSans', sans-serif;
-    overflow: hidden; /* Запрещаем и вертикальную, и горизонтальную прокрутку */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding-bottom: 180px; /* Отступ под нижний контейнер */
+  height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: #ffffff;
+  background: #171f2a;
+  font-family: "Monocraft";
+  overflow: hidden; /* Запрещаем и вертикальную, и горизонтальную прокрутку */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 180px; /* Отступ под нижний контейнер */
 }
 
 /* Стили для контейнера с Canvas */
 .profile-photo-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 18px;
 }
 
 #canvas {
-    width: 100%;
-    max-width: 350px; /* Ограничьте максимальную ширину */
-    aspect-ratio: 1 / 1; /* Соотношение сторон 1:1 для круглой формы */
-    border-radius: 50%;
-    object-fit: cover;
+  width: 100%;
+  max-width: 350px; /* Ограничьте максимальную ширину */
+  aspect-ratio: 1 / 1; /* Соотношение сторон 1:1 для круглой формы */
+  border-radius: 50%;
+  object-fit: cover;
 }
-
 
 /* Стили для слайдера */
 .slider-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 2px;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  gap: 10px;
 }
 
 #pixel-size {
-    width: 250px; /* Увеличенная длина слайдера */
-    -webkit-appearance: none;
-    appearance: none;
-    background: #314156;
-    height: 15px; /* Увеличенная высота слайдера */
-    border-radius: 6px; /* Немного более округлые края */
-    cursor: pointer;
-    outline: none;
+  width: 250px; /* Увеличенная длина слайдера */
+  -webkit-appearance: none;
+  appearance: none;
+  background: #314156;
+  height: 15px; /* Увеличенная высота слайдера */
+  border-radius: 6px; /* Немного более округлые края */
+  cursor: pointer;
+  outline: none;
 }
 
 #pixel-size::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 26px; /* Увеличенный размер ползунка */
-    height: 26px;
-    background-color: #248bda;
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px; /* Увеличенный размер ползунка */
+  height: 26px;
+  background-color: #248bda;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
 }
 
 #pixel-size::-moz-range-thumb {
-    width: 24px; /* Увеличенный размер ползунка */
-    height: 24px;
-    background-color: #248bda;
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
+  width: 24px; /* Увеличенный размер ползунка */
+  height: 24px;
+  background-color: #248bda;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
 }
-
 
 /* Нижний контейнер */
 .footer {
-    width: 100%;
-    background-color: #0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    position: fixed;
-    bottom: 0;
+  width: 100%;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: fixed;
+  bottom: 0;
 }
 
 .footer-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
-    max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 300px;
 }
 
 /* Стиль кнопок Upload и Get */
-.custom-label, .custom-button {
-    width: 100%;
-    height: 50px;
-    background-color: #314156;
-    color: #8794a1;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    line-height: 50px;
+.custom-label,
+.custom-button {
+  width: 100%;
+  height: 50px;
+  background-color: #314156;
+  color: #8794a1;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  line-height: 50px;
 }
 
 #upload-image {
-    display: none;
+  display: none;
 }
 
 .custom-button {
-    background-color: #248bda;
-    color: #ffffff;
+  background-color: #248bda;
+  color: #ffffff;
 }
 
 .custom-label:hover {
-    background-color: #293648;
+  background-color: #293648;
 }
 
 .custom-button:hover {
-    background-color: #207cc2;
+  background-color: #207cc2;
 }
-
