@@ -183,7 +183,7 @@ document.getElementById('upload-image').addEventListener('change', (event) => {
 });
 
 const initData = Telegram.WebApp.initData; // Теперь initData определено
-const userId = Telegram.WebApp.initDataUnsafe?.user?.id;
+//const userId = Telegram.WebApp.initDataUnsafe?.user?.id;
 
 // Функция для отправки изображения на сервер
 async function uploadImageToServer() {
