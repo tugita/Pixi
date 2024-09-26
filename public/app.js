@@ -244,8 +244,7 @@ async function uploadImageToServer() {
                 const data = await response.json();
                 if (data.success) {
                     console.log('Изображение успешно загружено на сервер:', data.fileUrl);
-                    // Открываем ссылку на Google
-                    Telegram.WebApp.openLink('https://www.google.com'); // Открываем Google
+                    Telegram.WebApp.openLink(data.fileUrl); // Открываем ссылку на изображение через Telegram.WebApp
                 } else {
                     console.error('Ошибка при загрузке изображения:', data.message);
                     alert('Ошибка: ' + data.message);
@@ -263,7 +262,6 @@ async function uploadImageToServer() {
 
 // Обработка нажатия на кнопку отправки
 document.getElementById('download-btn').addEventListener('click', uploadImageToServer);
-
 
 
 

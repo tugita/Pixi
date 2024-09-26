@@ -1,4 +1,3 @@
-//doSpaceService.js
 const AWS = require('aws-sdk');
 const path = require('path');
 const dotenv = require('dotenv');
@@ -18,11 +17,16 @@ function getS3() {
     });
 }
 
+// Генерация уникального имени файла
+function generateFileName(userId) {
+    const timestamp = Date.now();
+    return `${userId}_${timestamp}.jpg`;
+}
+
 // Функция для загрузки оригинального файла на DigitalOcean Spaces
 async function uploadOriginalFile(userId, file) {
-    const ext = '.jpg'; // Фиксированное расширение
-    const fileName = `${userId}${ext}`; // Имя файла — userId.jpg
-    const finalPath = `api-clicker/tg/avatars/${fileName}`; // Путь к файлу
+    const fileName = generateFileName(userId); // Генерация уникального имени файла
+    const finalPath = `api-clicker/tg/avatars/${fileName}`; // Уникальный путь к файлу
 
     const s3 = getS3();
     const params = {
@@ -42,14 +46,14 @@ async function uploadOriginalFile(userId, file) {
 }
 
 // Функция для загрузки пикселизированного файла на DigitalOcean Spaces
-async function uploadPixelatedFile(userId, pixelatedBuffer) {
-    const ext = '.jpg'; // Фиксированное расширение
-    const fileName = `${userId}${ext}`; // Имя файла — userId.jpg
-    const finalPath = `api-clicker/tg/avatars/pixel/${fileName}`; // Путь к пикселизированному файлу
-
+async function uploadPixelatedFile(userId, pixelatedBuffer, expire) {
     const s3 = getS3();
+    const ext = '.jpg'; // Фиксированное расширение
+    const fileName = `${userId}_${Date.now()}${ext}`; // Генерация уникального имени файла
+    const finalPath = `api-clicker/tg/avatars/pixel/${fileName}`; // Уникальный путь к пикселизированному файлу
+
     const params = {
-        Bucket: 'cobuild',
+        Bucket: 'cobuild', // Ваш Bucket в DigitalOcean Spaces
         Key: finalPath,
         Body: pixelatedBuffer,
         ACL: 'public-read',
@@ -57,6 +61,7 @@ async function uploadPixelatedFile(userId, pixelatedBuffer) {
     };
 
     try {
+        // Загружаем файл
         await s3.putObject(params).promise();
         return `https://cdn.joincommunity.xyz/${finalPath}`;
     } catch (error) {
@@ -64,10 +69,8 @@ async function uploadPixelatedFile(userId, pixelatedBuffer) {
     }
 }
 
-
 module.exports = {
     uploadOriginalFile,
     uploadPixelatedFile,
 };
-
 
