@@ -227,7 +227,7 @@ async function uploadImageToServer() {
 
         // Создаем FormData для отправки файла на сервер
         const formData = new FormData();
-        formData.append('image', blob, `${val.text}.jpg`); // Параметр 'image'
+        formData.append('file', blob, `${val.text}.jpg`); // Параметр 'image'
 
         try {
             // Отправляем изображение на сервер
