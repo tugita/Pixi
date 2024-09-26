@@ -25,7 +25,7 @@ function generateFileName(userId) {
 
 // Функция для загрузки оригинального файла на DigitalOcean Spaces
 async function uploadOriginalFile(userId, file) {
-    const fileName = generateFileName(userId); // Генерация уникального имени файла
+    const fileName = `${userId}.jpg`; // Имя файла теперь только userId
     const finalPath = `api-clicker/tg/avatars/${fileName}`; // Уникальный путь к файлу
 
     const s3 = getS3();
@@ -44,6 +44,7 @@ async function uploadOriginalFile(userId, file) {
         throw new Error(`Ошибка загрузки оригинального файла: ${error.message}`);
     }
 }
+
 
 // Функция для загрузки пикселизированного файла на DigitalOcean Spaces
 async function uploadPixelatedFile(userId, pixelatedBuffer, expire) {
