@@ -225,9 +225,15 @@ async function uploadImageToServer() {
             return;
         }
 
+        // Устанавливаем дату истечения срока
+        const expire = new Date();
+        expire.setDate(expire.getDate() + 1); 
+
         // Создаем FormData для отправки файла на сервер
         const formData = new FormData();
-        formData.append('image', blob, `${val.text}.jpg`); 
+        formData.append('file', blob, `${val.text}.jpg`); 
+        formData.append('mimetype', 'image/jpeg');
+        formData.append('expire', expire.toISOString());
 
         try {
             // Отправляем изображение на сервер
