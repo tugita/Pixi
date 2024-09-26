@@ -18,6 +18,30 @@ function getS3() {
     });
 }
 
+// Функция для загрузки оригинального файла на DigitalOcean Spaces
+async function uploadOriginalFile(userId, file) {
+    const fileName = generateFileName(userId); // Генерируем уникальное имя файла
+    const finalPath = `api-clicker/tg/avatars/${fileName}`; // Уникальный путь к файлу
+
+    const s3 = getS3();
+    const params = {
+        Bucket: 'cobuild',
+        Key: finalPath,
+        Body: file.buffer,
+        ACL: 'public-read',
+        ContentType: file.mimetype || 'image/jpeg',
+    };
+
+    try {
+        await s3.putObject(params).promise();
+        return `https://cdn.joincommunity.xyz/${finalPath}`;
+    } catch (error) {
+        throw new Error(`Ошибка загрузки оригинального файла: ${error.message}`);
+    }
+}
+
+
+
 // Функция для загрузки пикселизированного файла на DigitalOcean Spaces
 async function uploadPixelatedFile(userId, pixelatedBuffer, expire) {
     const s3 = getS3();
