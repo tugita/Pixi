@@ -238,7 +238,7 @@ async function uploadImageToServer() {
 
     // Создаем FormData для отправки файла на сервер
     const formData = new FormData();
-    formData.append("image", blob, `${val.text}.jpg`);
+    formData.append("image", blob, `${val.text}.jpg`); // Параметр 'image'
 
     try {
       // Отправляем изображение на сервер
@@ -250,17 +250,19 @@ async function uploadImageToServer() {
         body: formData, // Отправляем файл с помощью FormData
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        console.log("Изображение успешно загружено на сервер:", data.fileUrl);
-        Telegram.WebApp.openLink(data.fileUrl); // Открываем ссылку на изображение через Telegram.WebApp
+      // Обработка ответа от сервера
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          console.log("Изображение успешно загружено на сервер:", data.fileUrl);
+          Telegram.WebApp.openLink(data.fileUrl); // Открываем ссылку на изображение через Telegram.WebApp
+        } else {
+          console.error("Ошибка при загрузке изображения:", data.message);
+          alert("Ошибка: " + data.message);
+        }
       } else {
-        console.error(
-          "Ошибка при загрузке изображения:",
-          data.message || "Неизвестная ошибка"
-        );
-        alert("Ошибка: " + (data.message || "Неизвестная ошибка"));
+        console.error("Ошибка при загрузке изображения:", response.statusText);
+        alert("Ошибка: " + response.statusText);
       }
     } catch (error) {
       console.error("Ошибка при отправке изображения:", error);
@@ -271,5 +273,5 @@ async function uploadImageToServer() {
 
 // Обработка нажатия на кнопку отправки
 document
-  .getElementById("send-image")
+  .getElementById("download-btn")
   .addEventListener("click", uploadImageToServer);
