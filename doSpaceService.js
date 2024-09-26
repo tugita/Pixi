@@ -1,4 +1,3 @@
-//doSpaceService.js
 const AWS = require('aws-sdk');
 const path = require('path');
 const dotenv = require('dotenv');
@@ -18,9 +17,15 @@ function getS3() {
     });
 }
 
+// Генерация уникального имени файла
+function generateFileName(userId) {
+    const timestamp = Date.now();
+    return `${userId}_${timestamp}.jpg`;
+}
+
 // Функция для загрузки оригинального файла на DigitalOcean Spaces
 async function uploadOriginalFile(userId, file) {
-    const fileName = generateFileName(userId); // Генерируем уникальное имя файла
+    const fileName = generateFileName(userId); // Генерация уникального имени файла
     const finalPath = `api-clicker/tg/avatars/${fileName}`; // Уникальный путь к файлу
 
     const s3 = getS3();
@@ -40,8 +45,6 @@ async function uploadOriginalFile(userId, file) {
     }
 }
 
-
-
 // Функция для загрузки пикселизированного файла на DigitalOcean Spaces
 async function uploadPixelatedFile(userId, pixelatedBuffer, expire) {
     const s3 = getS3();
@@ -57,10 +60,6 @@ async function uploadPixelatedFile(userId, pixelatedBuffer, expire) {
         ContentType: 'image/jpeg',
     };
 
-    if (expire) {
-        params.Expires = new Date(expire); // Устанавливаем время истечения срока действия
-    }
-
     try {
         // Загружаем файл
         await s3.putObject(params).promise();
@@ -70,11 +69,8 @@ async function uploadPixelatedFile(userId, pixelatedBuffer, expire) {
     }
 }
 
-
-
 module.exports = {
     uploadOriginalFile,
     uploadPixelatedFile,
 };
-
 
