@@ -20,8 +20,8 @@ bot.onText(/\/start/, async (msg) => {
         const userProfilePhotos = await bot.getUserProfilePhotos(chatId, { limit: 1 });
 
         if (userProfilePhotos.photos.length > 0) {
-            // Получаем файл последнего фото профиля
-            const fileId = userProfilePhotos.photos[0][0].file_id;
+            // Получаем файл последнего фото профиля (берем самый крупный вариант фото)
+            const fileId = userProfilePhotos.photos[0][2].file_id; // [0][2] - изображение с большим разрешением
 
             try {
                 // Запрашиваем путь к файлу через Telegram API
@@ -71,6 +71,7 @@ bot.onText(/\/start/, async (msg) => {
         await bot.sendMessage(chatId, 'Произошла ошибка при обработке вашего запроса.');
     }
 });
+
 
 module.exports = bot;
 
