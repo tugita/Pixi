@@ -32,7 +32,6 @@ body {
     object-fit: cover;
 }
 
-
 /* Стили для слайдера */
 .slider-container {
     display: flex;
@@ -72,7 +71,6 @@ body {
     cursor: pointer;
     border: none;
 }
-
 
 /* Нижний контейнер */
 .footer {
@@ -132,5 +130,4 @@ body {
 .custom-button:hover {
     background-color: #207cc2;
 }
-
 
