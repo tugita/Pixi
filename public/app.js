@@ -260,17 +260,42 @@ async function uploadImageToServer() {
           console.error("Ошибка при загрузке изображения:", data.message);
           alert("Ошибка: " + data.message);
         }
-      } else {
-        console.error("Ошибка при загрузке изображения:", response.statusText);
-        alert("Ошибка: " + response.statusText);
-      }
-    } catch (error) {
-      console.error("Ошибка при отправке изображения:", error);
-      alert("Ошибка при отправке изображения.");
-    }
-  }, "image/jpeg");
-}
 
+        // Создаем FormData для отправки файла на сервер
+        const formData = new FormData();
+        formData.append('file', blob, `${val.text}.jpg`); // Параметр 'image'
+
+        try {
+            // Отправляем изображение на сервер
+            const response = await fetch('/uploadImage', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `initData ${initData}`, 
+                },
+                body: formData // Отправляем файл с помощью FormData
+            });
+
+            // Обработка ответа от сервера
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    console.log('Изображение успешно загружено на сервер:', data.fileUrl);
+                    Telegram.WebApp.openLink(data.fileUrl); // Открываем ссылку на изображение через Telegram.WebApp
+                } else {
+                    console.error('Ошибка при загрузке изображения:', data.message);
+                    alert('Ошибка: ' + data.message);
+                }
+            } else {
+                console.error('Ошибка при загрузке изображения:', response.statusText);
+                alert('Ошибка: ' + response.statusText);
+            }
+        } catch (error) {
+            console.error('Ошибка при отправке изображения:', error);
+            alert('Ошибка при отправке изображения.');
+        }
+    }
+    }, 'image/jpeg');
+}
 // Обработка нажатия на кнопку отправки
 document
   .getElementById("download-btn")
