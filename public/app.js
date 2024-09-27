@@ -5,8 +5,8 @@ Telegram.WebApp.ready();
 window.Telegram.WebApp.expand();
 window.Telegram.WebApp.disableVerticalSwipes();
 
-// const userId = Telegram.WebApp.initDataUnsafe.user.id;
-// const firstName = Telegram.WebApp.initDataUnsafe.user.first_name || 'User';
+const userId = Telegram.WebApp.initDataUnsafe.user.id;
+// const firstName = Telegram.WebApp.initDataUnsafe.user.first_name || "User";
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -56,7 +56,6 @@ function loadPhotoFromLocal() {
   if (photoBase64) {
     img.src = photoBase64;
     img.onload = () => {
-      canvas.style.borderRadius = "50%";
       drawImageToCanvas(img);
     };
   } else {
@@ -82,7 +81,6 @@ async function loadImageFromServer() {
     await new Promise((resolve) => {
       img.src = url;
       img.onload = () => {
-        canvas.style.borderRadius = "50%";
         resolve();
       };
     });
@@ -265,7 +263,7 @@ function shareStory() {
   });
 }
 const initData = Telegram.WebApp.initData;
-const initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
+// const initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
 
 // Отправка изображения на сервер
 async function uploadImageToServer() {
