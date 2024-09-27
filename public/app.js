@@ -1,3 +1,5 @@
+import { setLocalesTexts, getLocalesTexts } from "./locales.js";
+
 //app.js
 Telegram.WebApp.ready();
 window.Telegram.WebApp.expand();
@@ -13,7 +15,15 @@ const pixelSizeValue = document.getElementById("pixel-size-value");
 let imageLoaded = false;
 let img = new Image();
 
-canvas.style.borderRadius = "50%";
+const SCREENS = ["initial-screen", "loading-screen", "empty-screen"];
+
+function setActiveScreen(activeScreen) {
+  SCREENS.forEach((screen) => {
+    document.querySelector(`.${screen}`).classList.remove("active-screen");
+  });
+
+  document.querySelector(`.${activeScreen}`).classList.add("active-screen");
+}
 
 // Предотвращаем перетаскивание и скроллинг
 function preventDefaultTouch(event) {
@@ -98,11 +108,6 @@ async function loadProfilePhoto() {
     console.log("Фото загружено из локального хранилища.");
   }
 }
-
-// Инициализация загрузки фото
-(async function () {
-  await loadProfilePhoto();
-})();
 
 // Рисование изображения на канвасе
 function drawImageToCanvas(image) {
@@ -204,10 +209,15 @@ pixelSizeInput.addEventListener("input", () => {
   }
 });
 
-// Обработка загрузки изображения вручную
-document.getElementById("upload-image").addEventListener("change", (event) => {
+function handleUploadImage(event) {
   const file = event.target.files[0];
   if (file) {
+    document
+      .querySelector(".initial-screen_upload-button_icon-spinner")
+      .classList.add("active-spinner");
+    document
+      .querySelector(".empty-screen_upload-button_icon-spinner")
+      .classList.remove("active-spinner");
     const reader = new FileReader();
     reader.onload = function (e) {
       img.src = e.target.result;
@@ -215,12 +225,45 @@ document.getElementById("upload-image").addEventListener("change", (event) => {
         canvas.style.borderRadius = "0";
         drawImageToCanvas(img);
         pixelateWithGrid();
+        setActiveScreen("initial-screen");
+        document
+          .querySelector(".initial-screen_upload-button_icon-spinner")
+          .classList.remove("active-spinner");
+        document
+          .querySelector(".empty-screen_upload-button_icon-spinner")
+          .classList.remove("active-spinner");
       };
     };
     reader.readAsDataURL(file);
   }
-});
+}
 
+// Обработка загрузки изображения вручную
+document
+  .getElementById("empty-uploader")
+  .addEventListener("change", (event) => {
+    handleUploadImage(event);
+  });
+document
+  .getElementById("initial-uploader")
+  .addEventListener("change", (event) => {
+    handleUploadImage(event);
+  });
+
+function shareStory() {
+  const webApp = window.Telegram.WebApp;
+  if (webApp.version < "7.8") {
+    return null;
+  }
+
+  webApp.shareToStory(img, {
+    text: getLocalesTexts().storyMessage,
+    widget_link: {
+      url: "https://t.me/notpixel_me_bot",
+      name: getLocalesTexts().storyLinkText,
+    },
+  });
+}
 const initData = Telegram.WebApp.initData;
 const initDataUnsafe = Telegram.WebApp.initDataUnsafe || {};
 
@@ -271,7 +314,33 @@ async function uploadImageToServer() {
   }, "image/jpeg");
 }
 
+document
+  .getElementById("empty-uploader")
+  .addEventListener("change", (event) => {
+    uploadImage(event);
+  });
+document
+  .getElementById("initial-uploader")
+  .addEventListener("change", (event) => {
+    uploadImage(event);
+  });
+
 // Обработка нажатия на кнопку отправки
 document
-  .getElementById("send-image")
+  .getElementById("save-button")
   .addEventListener("click", uploadImageToServer);
+
+document.getElementById("share-button").addEventListener("click", shareStory);
+
+async function main() {
+  try {
+    setLocalesTexts();
+    setActiveScreen("loading-screen");
+    await loadProfilePhoto();
+    setActiveScreen("initial-screen");
+  } catch (error) {
+    setActiveScreen("empty-screen");
+  }
+}
+
+await main();
